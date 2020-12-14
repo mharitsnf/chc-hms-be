@@ -13,11 +13,20 @@ const routes = async (fastify, options) => {
                         }
                     }
                 }
-            },
+            }
+        },
+        (_request, reply) => {
+            reply.send({ hello: "world" })
+        }
+    )
+
+    fastify.get(
+        '/unauthorized',
+        {
             preValidation: [fastify.authenticate]
         },
         (_request, reply) => {
-            reply.send({ hello: "asu" })
+            reply.send({ data: "OK you good" })
         }
     )
 }
