@@ -4,7 +4,7 @@ const accountSchema = new mongoose.Schema({
     username: String,
     password: String,
     email: String,
-    create_date: Date,
+    create_date: { type: Date, default: Date.now },
     last_login: Date,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 })

@@ -8,14 +8,21 @@ const fastify = require("fastify")({
 
 // Mongoose
 const mongoose = require("mongoose")
-mongoose.connect(
-    `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?authSource=admin`,
-    { 
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    }
-).then(() => console.log("Mongodb connected"))
-.catch((err) => console.log(err))
+try {
+    mongoose.connect(
+        `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?authSource=admin`,
+        { 
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useFindAndModify: false
+        }
+    )
+    console.log("MongoDB connection successful")
+} catch (error) {
+    console.log("MongoDB connection error")
+    console.log(error)
+    process.exit(1)
+}
 
 // JWT setup
 const jwt = require("jsonwebtoken")
@@ -36,6 +43,7 @@ fastify.decorate("authenticate", (request, reply, done) => {
 
 fastify.register(require("./src/routes/sample"))
 fastify.register(require("./src/routes/userController"))
+fastify.register(require("./src/routes/divisionController"))
 
 // Fastify intialization
 const start = async () => {

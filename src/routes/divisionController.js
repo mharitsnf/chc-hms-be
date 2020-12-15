@@ -1,33 +1,34 @@
-const User = require("../models/userModel")
+const Division = require("../models/divisionModel")
 
 const routes = async (fastify, options) => {
     fastify.get(
-        '/users',
+        '/divisions',
         async (_request, reply) => {
             try {
-                const users = await User.find()
+                const divisions = await Division.find()
                 return {
                     statusCode: 200,
                     message: "Successful",
-                    data: users
+                    data: divisions
                 }          
             } catch (error) {
                 reply.code(500)
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
     )
 
     fastify.get(
-        '/users/:user_id',
+        '/divisions/:division_id',
         async (request, reply) => {
             try {
-                const user_id = request.params.user_id
-                const user = await User.findById(user_id)
+                const division_id = request.params.division_id
+                const user = await Division.findById(division_id)
                 return {
                     statusCode: 200,
                     message: "Successful",
@@ -38,30 +39,30 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
     )
 
     fastify.post(
-        '/users',
+        '/divisions',
         {
             schema: {
                 body: {
                     type: "object",
-                    required: ['fullname'],
+                    required: ['division_name'],
                     properties: {
-                        fullname: { type:  "string" },
-                        nickname: { type:  "string" },
-                        KIP: { type:  "string" }
+                        division_name: { type: 'string' },
+                        menu_permission: { type: 'array' }
                     }
                 }
             }
         },
         async (request, reply) => {
             try {
-                const user = new User(request.body)
+                const user = new Division(request.body)
                 const res = await user.save()
                 return {
                     statusCode: 200,
@@ -73,32 +74,32 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
     )
 
     fastify.put(
-        '/users/:user_id',
+        '/divisions/:division_id',
         {
             schema: {
                 body: {
-                    type: 'object',
+                    type: "object",
                     properties: {
-                        fullname: { type:  'string' },
-                        nickname: { type:  'string' },
-                        KIP: { type:  'string' }
+                        division_name: { type: 'string' },
+                        menu_permission: { type: 'array' }
                     }
                 }
             }
         },
         async (request, reply) => {
             try {
-                const user_id = request.params.user_id
+                const division_id = request.params.division_id
                 const user = request.body
                 const { ...updateData } = user
-                const res = await User.findByIdAndUpdate(user_id, updateData, { new: true })
+                const res = await Division.findByIdAndUpdate(division_id, updateData, { new: true })
                 return {
                     statusCode: 200,
                     message: "Successful",
@@ -109,18 +110,24 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
     )
 
     fastify.delete(
-        '/users/:user_id',
+        '/divisions/:division_id',
         async (request, reply) => {
             try {
-                const user_id = request.params.user_id
-                const res = await User.findByIdAndRemove(user_id)
+                const division_id = request.params.division_id
+                const res = await Division.findByIdAndRemove(division_id)
+
+                if (res == null) {
+                    throw new Error('Document not found')
+                }
+
                 return {
                     statusCode: 200,
                     message: "Successful",
@@ -131,7 +138,8 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
