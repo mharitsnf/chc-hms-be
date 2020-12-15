@@ -16,7 +16,8 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
@@ -38,7 +39,8 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
@@ -50,18 +52,30 @@ const routes = async (fastify, options) => {
             schema: {
                 body: {
                     type: "object",
-                    required: ['fullname'],
+                    required: ['fullname', 'nickname'],
                     properties: {
-                        fullname: { type:  "string" },
-                        nickname: { type:  "string" },
-                        KIP: { type:  "string" }
+                        fullname: { type:  'string' },
+                        nickname: { type:  'string' },
+                        KIP: { type:  'string' },
+                        username: { type:  'string' },
+                        password: { type:  'string' },
+                        email: { type:  'string' },
+                        last_login: { type:  'object', format: 'date-time' }
                     }
                 }
             }
         },
         async (request, reply) => {
             try {
-                const user = new User(request.body)
+                const body = request.body
+
+                if (body.password != null) {
+                    const bcrypt = require('bcrypt')
+                    const password = await bcrypt.hash(body.password, 10)
+                    body.password = password
+                }
+
+                const user = new User(body)
                 const res = await user.save()
                 return {
                     statusCode: 200,
@@ -73,7 +87,8 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
@@ -88,7 +103,10 @@ const routes = async (fastify, options) => {
                     properties: {
                         fullname: { type:  'string' },
                         nickname: { type:  'string' },
-                        KIP: { type:  'string' }
+                        KIP: { type:  'string' },
+                        username: { type:  'string' },
+                        password: { type:  'string' },
+                        email: { type:  'string' }
                     }
                 }
             }
@@ -109,7 +127,8 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
@@ -121,6 +140,11 @@ const routes = async (fastify, options) => {
             try {
                 const user_id = request.params.user_id
                 const res = await User.findByIdAndRemove(user_id)
+
+                if (res == null) {
+                    throw new Error('Document not found')
+                }
+
                 return {
                     statusCode: 200,
                     message: "Successful",
@@ -131,7 +155,8 @@ const routes = async (fastify, options) => {
                 return {
                     statusCode: 500,
                     error: "Internal Server Error",
-                    message: error
+                    message: error.message ? error.message : 'No message provided',
+                    details: error
                 }
             }
         }
