@@ -15,8 +15,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
+                    error: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }
@@ -38,8 +37,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
+                    error: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }
@@ -58,7 +56,7 @@ const routes = async (fastify, options) => {
                         nickname: { type:  'string' },
                         KIP: { type:  'string' },
                         username: { type:  'string' },
-                        password: { type:  'string' },
+                        password: { type:  'string', minLength: 6 },
                         email: { type:  'string' },
                         last_login: { type:  'object', format: 'date-time' }
                     }
@@ -69,10 +67,17 @@ const routes = async (fastify, options) => {
             try {
                 const body = request.body
 
-                if (body.password != null) {
-                    const bcrypt = require('bcrypt')
-                    const password = await bcrypt.hash(body.password, 10)
-                    body.password = password
+                if ((body.username != null) !== (body.password != null)) {
+                    reply.code(400)
+                    return {
+                        statusCode: 400,
+                        error: 'Please provide both username and password or omit both.'
+                    }
+                } else {
+                    if (body.password != null) {
+                        const bcrypt = require('bcrypt')
+                        body.password = await bcrypt.hash(body.password, 10)
+                    }
                 }
 
                 const user = new User(body)
@@ -86,8 +91,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
+                    error: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }
@@ -105,7 +109,7 @@ const routes = async (fastify, options) => {
                         nickname: { type:  'string' },
                         KIP: { type:  'string' },
                         username: { type:  'string' },
-                        password: { type:  'string' },
+                        password: { type:  'string', minLength: 6 },
                         email: { type:  'string' }
                     }
                 }
@@ -114,9 +118,25 @@ const routes = async (fastify, options) => {
         async (request, reply) => {
             try {
                 const user_id = request.params.user_id
-                const user = request.body
-                const { ...updateData } = user
-                const res = await User.findByIdAndUpdate(user_id, updateData, { new: true })
+                const body = request.body
+                const user = await User.findById(user_id)
+
+                if (user.username == null && user.password == null) {
+                    if (body.username == null || body.password == null) {
+                        reply.code(400)
+                        return {
+                            statusCode: 400,
+                            error: 'Please provide both username and password or omit both.'
+                        }
+                    }
+                } else {
+                    if (body.password != null) {
+                        const bcrypt = require('bcrypt')
+                        body.password = await bcrypt.hash(body.password, 10)
+                    }
+                }
+
+                const res = await User.findByIdAndUpdate(user_id, body, { new: true })
                 return {
                     statusCode: 200,
                     message: "Successful",
@@ -126,8 +146,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
+                    error: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }
@@ -154,8 +173,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
+                    error: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }

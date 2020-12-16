@@ -3,8 +3,8 @@ const mongoose = require("mongoose")
 const userSchema = new mongoose.Schema({
     fullname: String,
     nickname: String,
-    KIP: String,
-    username: String,
+    KIP: { type: String, unique: true, index: true, sparse: true },
+    username: { type: String, unique: true },
     password: String,
     email: String,
     last_login: Date,
