@@ -1,9 +1,9 @@
-const Division = require("../models/divisionModel")
+const Level = require("../models/levelModel")
 const { successOutputs, errorOutputs } = require("../outputs/outputs")
 
 const routes = async (fastify, options) => {
     fastify.get(
-        '/divisions',
+        '/levels',
         {
             schema: {
                 response: {
@@ -14,7 +14,7 @@ const routes = async (fastify, options) => {
                             message: { type: 'string' },
                             data: {
                                 type: 'array',
-                                items: { $ref: 'DivisionSerializer#' }
+                                items: { $ref: 'LevelSerializer#' }
                             }
                         }
                     }
@@ -23,8 +23,8 @@ const routes = async (fastify, options) => {
         },
         async (_request, reply) => {
             try {
-                const divisions = await Division.find()
-                return successOutputs(divisions)
+                const levels = await Level.find()
+                return successOutputs(levels)
                 
             } catch (error) {
                 return errorOutputs(500, error, reply)
@@ -33,7 +33,7 @@ const routes = async (fastify, options) => {
     )
 
     fastify.get(
-        '/divisions/:divisionId',
+        '/levels/:levelId',
         {
             schema: {
                 response: {
@@ -42,7 +42,7 @@ const routes = async (fastify, options) => {
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'LevelSerializer#' }
                         }
                     }
                 }
@@ -50,8 +50,8 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
-                const division = await Division.findById(divisionId)
+                const levelId = request.params.levelId
+                const division = await Level.findById(levelId)
                 return successOutputs(division)
 
             } catch (error) {
@@ -61,17 +61,17 @@ const routes = async (fastify, options) => {
     )
 
     fastify.post(
-        '/divisions',
+        '/levels',
         {
             schema: {
-                body: { $ref: 'DivisionBody#' },
+                body: { $ref: 'LevelBody#' },
                 response: {
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'LevelSerializer#' }
                         }
                     }
                 }
@@ -79,7 +79,7 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const user = new Division(request.body)
+                const user = new Level(request.body)
                 const res = await user.save()
                 return successOutputs(res)
 
@@ -90,17 +90,17 @@ const routes = async (fastify, options) => {
     )
 
     fastify.put(
-        '/divisions/:divisionId',
+        '/levels/:levelId',
         {
             schema: {
-                body: { $ref: 'DivisionBody#' },
+                body: { $ref: 'LevelBody#' },
                 response: {
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'LevelSerializer#' }
                         }
                     }
                 }
@@ -108,9 +108,9 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
+                const levelId = request.params.levelId
                 const body = request.body
-                const res = await Division.findByIdAndUpdate(divisionId, body, { new: true })
+                const res = await Level.findByIdAndUpdate(levelId, body, { new: true })
                 return successOutputs(res)
 
             } catch (error) {
@@ -120,7 +120,7 @@ const routes = async (fastify, options) => {
     )
 
     fastify.delete(
-        '/divisions/:divisionId',
+        '/levels/:levelId',
         {
             schema: {
                 response: {
@@ -129,7 +129,7 @@ const routes = async (fastify, options) => {
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'LevelSerializer#' }
                         }
                     }
                 }
@@ -137,8 +137,8 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
-                const res = await Division.findByIdAndRemove(divisionId)
+                const levelId = request.params.levelId
+                const res = await Level.findByIdAndRemove(levelId)
 
                 if (res == null) {
                     throw new Error('Document not found')

@@ -7,7 +7,8 @@ const fastify = require("fastify")({
 })
 
 // Add shared schema
-require('./src/schemas/sharedSchema')({ fastify })
+require('./src/schemas/bodies')({ fastify })
+require('./src/schemas/serializers')({ fastify })
 
 // Mongoose
 const mongoose = require("mongoose")
@@ -47,6 +48,7 @@ fastify.decorate("authenticate", (request, reply, done) => {
 fastify.register(require("./src/routes/sample"))
 fastify.register(require("./src/routes/userController"))
 fastify.register(require("./src/routes/divisionController"))
+fastify.register(require("./src/routes/levelController"))
 
 // Fastify intialization
 const start = async () => {

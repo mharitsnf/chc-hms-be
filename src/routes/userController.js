@@ -7,13 +7,24 @@ const routes = async (fastify, options) => {
         {
             schema: {
                 response: {
-                    '4xx': { $ref: '4xxSerializer#' }
+                    '4xx': { $ref: '4xxSerializer#' },
+                    '2xx': {
+                        type: 'object',
+                        properties: {
+                            statusCode: { type: 'number' },
+                            message: { type: 'string' },
+                            data: {
+                                type: 'array',
+                                items: { $ref: 'UserSerializer#' }
+                            }
+                        }
+                    }
                 }
             }  
         },
         async (_request, reply) => {
             try {
-                const users = await User.find()
+                const users = await User.find().populate('level').populate('division')
                 return successOutputs(users)
 
             } catch (error) {
@@ -27,14 +38,22 @@ const routes = async (fastify, options) => {
         {
             schema: {
                 response: {
-                    '4xx': { $ref: '4xxSerializer#' }
+                    '4xx': { $ref: '4xxSerializer#' },
+                    '2xx': {
+                        type: 'object',
+                        properties: {
+                            statusCode: { type: 'number' },
+                            message: { type: 'string' },
+                            data: { $ref: 'UserSerializer#' }
+                        }
+                    }
                 }
             }  
         },
         async (request, reply) => {
             try {
                 const userId = request.params.userId
-                const user = await User.findById(userId)
+                const user = await User.findById(userId).populate('level').populate('division')
                 return successOutputs(user)
 
             } catch (error) {
@@ -47,21 +66,18 @@ const routes = async (fastify, options) => {
         '/users',
         {
             schema: {
-                body: {
-                    type: "object",
-                    required: ['fullname', 'nickname'],
-                    properties: {
-                        fullname: { type:  'string' },
-                        nickname: { type:  'string' },
-                        KIP: { type:  'string' },
-                        username: { type:  'string' },
-                        password: { type:  'string', minLength: 6 },
-                        email: { type:  'string' },
-                        lastLogin: { type:  'object', format: 'date-time' }
-                    }
-                },
+                body: { $ref: 'UserBody#' },
                 response: {
-                    '4xx': { $ref: '4xxSerializer#' }
+                    '4xx': { $ref: '4xxSerializer#' },
+                    '2xx': {
+                        type: 'object',
+                        properties: {
+                            statusCode: { type: 'number' },
+                            message: { type: 'string' },
+                            data: { $ref: 'UserSerializer#' }
+                            
+                        }
+                    }
                 }
             }
         },
@@ -93,21 +109,18 @@ const routes = async (fastify, options) => {
         '/users/:userId',
         {
             schema: {
-                body: {
-                    type: 'object',
-                    properties: {
-                        fullname: { type:  'string' },
-                        nickname: { type:  'string' },
-                        KIP: { type:  'string' },
-                        username: { type:  'string' },
-                        password: { type:  'string', minLength: 6 },
-                        email: { type:  'string' },
-                        division: { type:  'string' },
-                        level: { type:  'string' }
-                    }
-                },
+                body: { $ref: 'UserBody#' },
                 response: {
-                    '4xx': { $ref: '4xxSerializer#' }
+                    '4xx': { $ref: '4xxSerializer#' },
+                    '2xx': {
+                        type: 'object',
+                        properties: {
+                            statusCode: { type: 'number' },
+                            message: { type: 'string' },
+                            data: { $ref: 'UserSerializer#' }
+                            
+                        }
+                    }
                 }
             }
         },
@@ -143,7 +156,16 @@ const routes = async (fastify, options) => {
         {
             schema: {
                 response: {
-                    '4xx': { $ref: '4xxSerializer#' }
+                    '4xx': { $ref: '4xxSerializer#' },
+                    '2xx': {
+                        type: 'object',
+                        properties: {
+                            statusCode: { type: 'number' },
+                            message: { type: 'string' },
+                            data: { $ref: 'UserSerializer#' }
+                            
+                        }
+                    }
                 }
             }  
         },
