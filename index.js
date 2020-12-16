@@ -32,20 +32,23 @@ try {
 const jwt = require("jsonwebtoken")
 fastify.decorate("authenticate", (request, reply, done) => {
     try {
-        jwt.verify(request.headers.authorization, process.env.JWT_SECRET)        
+        const decoded = jwt.verify(request.headers.authorization, process.env.JWT_SECRET)
+        request.user = decoded
+        done()
     } catch (error) {
         reply
             .code(500)
             .send({
-                code: 500,
-                error: "Internal Server Error",
-                data: "You are not authorized!"
+                statusCode: 500,
+                message: "Authentication failed",
+                detail: error
             })
         done()        
     }
 })
 
 fastify.register(require("./src/routes/sample"))
+fastify.register(require("./src/routes/authController"))
 fastify.register(require("./src/routes/userController"))
 fastify.register(require("./src/routes/divisionController"))
 fastify.register(require("./src/routes/levelController"))

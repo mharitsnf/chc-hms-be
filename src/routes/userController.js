@@ -5,6 +5,7 @@ const routes = async (fastify, options) => {
     fastify.get(
         '/users',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 response: {
                     '4xx': { $ref: '4xxSerializer#' },
@@ -36,6 +37,7 @@ const routes = async (fastify, options) => {
     fastify.get(
         '/users/:userId',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 response: {
                     '4xx': { $ref: '4xxSerializer#' },
@@ -65,6 +67,7 @@ const routes = async (fastify, options) => {
     fastify.post(
         '/users',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 body: { $ref: 'UserBody#' },
                 response: {
@@ -108,6 +111,7 @@ const routes = async (fastify, options) => {
     fastify.put(
         '/users/:userId',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 body: { $ref: 'UserBody#' },
                 response: {
@@ -154,6 +158,7 @@ const routes = async (fastify, options) => {
     fastify.delete(
         '/users/:userId',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 response: {
                     '4xx': { $ref: '4xxSerializer#' },

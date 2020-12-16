@@ -1,5 +1,16 @@
 
 module.exports = ({ fastify }) => {
+
+    // Auth token body schema
+    fastify.addSchema({
+        $id: 'AuthTokenBody',
+        type: 'object',
+        properties: {
+            username: { type: 'string' },
+            password: { type: 'string', minLength: 6 }
+        }
+    })
+
     // Division body schema
     fastify.addSchema({
         $id: 'DivisionBody',
