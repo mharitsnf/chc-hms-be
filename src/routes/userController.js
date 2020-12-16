@@ -1,4 +1,5 @@
 const User = require("../models/userModel")
+const { successOutputs, errorOutputs } = require("../outputs/outputs")
 
 const routes = async (fastify, options) => {
     fastify.get(
@@ -13,18 +14,10 @@ const routes = async (fastify, options) => {
         async (_request, reply) => {
             try {
                 const users = await User.find()
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: users
-                }          
+                return successOutputs(users)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
@@ -42,18 +35,10 @@ const routes = async (fastify, options) => {
             try {
                 const user_id = request.params.user_id
                 const user = await User.findById(user_id)
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: user
-                }
+                return successOutputs(user)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
@@ -85,11 +70,8 @@ const routes = async (fastify, options) => {
                 const body = request.body
 
                 if ((body.username != null) !== (body.password != null)) {
-                    reply.code(400)
-                    return {
-                        statusCode: 400,
-                        message: 'Please provide both username and password or omit both.'
-                    }
+                    return errorOutputs(400, new Error('Please provide both username and password or omit both.'), reply)
+
                 } else {
                     if (body.password != null) {
                         const bcrypt = require('bcrypt')
@@ -99,18 +81,10 @@ const routes = async (fastify, options) => {
 
                 const user = new User(body)
                 const res = await user.save()
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: res
-                }
+                return successOutputs(res)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
@@ -143,11 +117,8 @@ const routes = async (fastify, options) => {
 
                 if (user.username == null && user.password == null) {
                     if (body.username == null || body.password == null) {
-                        reply.code(400)
-                        return {
-                            statusCode: 400,
-                            message: 'Please provide both username and password or omit both.'
-                        }
+                        return errorOutputs(400, new Error('Please provide both username and password or omit both.'), reply)
+
                     }
                 } else {
                     if (body.password != null) {
@@ -157,18 +128,10 @@ const routes = async (fastify, options) => {
                 }
 
                 const res = await User.findByIdAndUpdate(user_id, body, { new: true })
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: res
-                }
+                return successOutputs(res)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
@@ -191,18 +154,10 @@ const routes = async (fastify, options) => {
                     throw new Error('Document not found')
                 }
 
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: res
-                }
+                return successOutputs(res)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )

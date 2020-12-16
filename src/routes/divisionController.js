@@ -1,4 +1,5 @@
 const Division = require("../models/divisionModel")
+const { successOutputs, errorOutputs } = require("../outputs/outputs")
 
 const routes = async (fastify, options) => {
     fastify.get(
@@ -6,19 +7,10 @@ const routes = async (fastify, options) => {
         async (_request, reply) => {
             try {
                 const divisions = await Division.find()
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: divisions
-                }          
+                return successOutputs(divisions)
+                
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
@@ -28,20 +20,11 @@ const routes = async (fastify, options) => {
         async (request, reply) => {
             try {
                 const division_id = request.params.division_id
-                const user = await Division.findById(division_id)
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: user
-                }
+                const division = await Division.findById(division_id)
+                return successOutputs(division)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
@@ -64,19 +47,10 @@ const routes = async (fastify, options) => {
             try {
                 const user = new Division(request.body)
                 const res = await user.save()
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: res
-                }
+                return successOutputs(res)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
@@ -97,22 +71,12 @@ const routes = async (fastify, options) => {
         async (request, reply) => {
             try {
                 const division_id = request.params.division_id
-                const user = request.body
-                const { ...updateData } = user
-                const res = await Division.findByIdAndUpdate(division_id, updateData, { new: true })
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: res
-                }
+                const body = request.body
+                const res = await Division.findByIdAndUpdate(division_id, body, { new: true })
+                return successOutputs(res)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
@@ -128,19 +92,10 @@ const routes = async (fastify, options) => {
                     throw new Error('Document not found')
                 }
 
-                return {
-                    statusCode: 200,
-                    message: "Successful",
-                    data: res
-                }
+                return successOutputs(res)
+
             } catch (error) {
-                reply.code(500)
-                return {
-                    statusCode: 500,
-                    error: "Internal Server Error",
-                    message: error.message ? error.message : 'No message provided',
-                    details: error
-                }
+                return errorOutputs(500, error, reply)
             }
         }
     )
