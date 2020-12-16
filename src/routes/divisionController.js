@@ -16,11 +16,11 @@ const routes = async (fastify, options) => {
     )
 
     fastify.get(
-        '/divisions/:division_id',
+        '/divisions/:divisionId',
         async (request, reply) => {
             try {
-                const division_id = request.params.division_id
-                const division = await Division.findById(division_id)
+                const divisionId = request.params.divisionId
+                const division = await Division.findById(divisionId)
                 return successOutputs(division)
 
             } catch (error) {
@@ -35,10 +35,10 @@ const routes = async (fastify, options) => {
             schema: {
                 body: {
                     type: "object",
-                    required: ['division_name'],
+                    required: ['divisionName'],
                     properties: {
-                        division_name: { type: 'string' },
-                        menu_permission: { type: 'array' }
+                        divisionName: { type: 'string' },
+                        menuPermissions: { type: 'array' }
                     }
                 }
             }
@@ -56,23 +56,23 @@ const routes = async (fastify, options) => {
     )
 
     fastify.put(
-        '/divisions/:division_id',
+        '/divisions/:divisionId',
         {
             schema: {
                 body: {
                     type: "object",
                     properties: {
-                        division_name: { type: 'string' },
-                        menu_permission: { type: 'array' }
+                        divisionName: { type: 'string' },
+                        menuPermissions: { type: 'array' }
                     }
                 }
             }
         },
         async (request, reply) => {
             try {
-                const division_id = request.params.division_id
+                const divisionId = request.params.divisionId
                 const body = request.body
-                const res = await Division.findByIdAndUpdate(division_id, body, { new: true })
+                const res = await Division.findByIdAndUpdate(divisionId, body, { new: true })
                 return successOutputs(res)
 
             } catch (error) {
@@ -82,11 +82,11 @@ const routes = async (fastify, options) => {
     )
 
     fastify.delete(
-        '/divisions/:division_id',
+        '/divisions/:divisionId',
         async (request, reply) => {
             try {
-                const division_id = request.params.division_id
-                const res = await Division.findByIdAndRemove(division_id)
+                const divisionId = request.params.divisionId
+                const res = await Division.findByIdAndRemove(divisionId)
 
                 if (res == null) {
                     throw new Error('Document not found')

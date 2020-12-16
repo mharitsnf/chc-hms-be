@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     username: { type: String, unique: true },
     password: String,
     email: String,
-    last_login: Date,
+    lastLogin: Date,
     division: { type: mongoose.Schema.Types.ObjectId, ref: 'Division' },
     level: { type: mongoose.Schema.Types.ObjectId, ref: 'Level' }
 })

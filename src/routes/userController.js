@@ -23,7 +23,7 @@ const routes = async (fastify, options) => {
     )
 
     fastify.get(
-        '/users/:user_id',
+        '/users/:userId',
         {
             schema: {
                 response: {
@@ -33,8 +33,8 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const user_id = request.params.user_id
-                const user = await User.findById(user_id)
+                const userId = request.params.userId
+                const user = await User.findById(userId)
                 return successOutputs(user)
 
             } catch (error) {
@@ -57,7 +57,7 @@ const routes = async (fastify, options) => {
                         username: { type:  'string' },
                         password: { type:  'string', minLength: 6 },
                         email: { type:  'string' },
-                        last_login: { type:  'object', format: 'date-time' }
+                        lastLogin: { type:  'object', format: 'date-time' }
                     }
                 },
                 response: {
@@ -90,7 +90,7 @@ const routes = async (fastify, options) => {
     )
 
     fastify.put(
-        '/users/:user_id',
+        '/users/:userId',
         {
             schema: {
                 body: {
@@ -101,7 +101,9 @@ const routes = async (fastify, options) => {
                         KIP: { type:  'string' },
                         username: { type:  'string' },
                         password: { type:  'string', minLength: 6 },
-                        email: { type:  'string' }
+                        email: { type:  'string' },
+                        division: { type:  'string' },
+                        level: { type:  'string' }
                     }
                 },
                 response: {
@@ -111,9 +113,9 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const user_id = request.params.user_id
+                const userId = request.params.userId
                 const body = request.body
-                const user = await User.findById(user_id)
+                const user = await User.findById(userId)
 
                 if (user.username == null && user.password == null) {
                     if (body.username == null || body.password == null) {
@@ -127,7 +129,7 @@ const routes = async (fastify, options) => {
                     }
                 }
 
-                const res = await User.findByIdAndUpdate(user_id, body, { new: true })
+                const res = await User.findByIdAndUpdate(userId, body, { new: true })
                 return successOutputs(res)
 
             } catch (error) {
@@ -137,7 +139,7 @@ const routes = async (fastify, options) => {
     )
 
     fastify.delete(
-        '/users/:user_id',
+        '/users/:userId',
         {
             schema: {
                 response: {
@@ -147,8 +149,8 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const user_id = request.params.user_id
-                const res = await User.findByIdAndRemove(user_id)
+                const userId = request.params.userId
+                const res = await User.findByIdAndRemove(userId)
 
                 if (res == null) {
                     throw new Error('Document not found')
