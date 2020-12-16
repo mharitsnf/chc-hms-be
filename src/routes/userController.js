@@ -3,6 +3,13 @@ const User = require("../models/userModel")
 const routes = async (fastify, options) => {
     fastify.get(
         '/users',
+        {
+            schema: {
+                response: {
+                    '4xx': { $ref: '4xxSerializer#' }
+                }
+            }  
+        },
         async (_request, reply) => {
             try {
                 const users = await User.find()
@@ -15,7 +22,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: error.message ? error.message : 'No message provided',
+                    message: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }
@@ -24,6 +31,13 @@ const routes = async (fastify, options) => {
 
     fastify.get(
         '/users/:user_id',
+        {
+            schema: {
+                response: {
+                    '4xx': { $ref: '4xxSerializer#' }
+                }
+            }  
+        },
         async (request, reply) => {
             try {
                 const user_id = request.params.user_id
@@ -37,7 +51,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: error.message ? error.message : 'No message provided',
+                    message: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }
@@ -60,6 +74,9 @@ const routes = async (fastify, options) => {
                         email: { type:  'string' },
                         last_login: { type:  'object', format: 'date-time' }
                     }
+                },
+                response: {
+                    '4xx': { $ref: '4xxSerializer#' }
                 }
             }
         },
@@ -71,7 +88,7 @@ const routes = async (fastify, options) => {
                     reply.code(400)
                     return {
                         statusCode: 400,
-                        error: 'Please provide both username and password or omit both.'
+                        message: 'Please provide both username and password or omit both.'
                     }
                 } else {
                     if (body.password != null) {
@@ -91,7 +108,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: error.message ? error.message : 'No message provided',
+                    message: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }
@@ -112,6 +129,9 @@ const routes = async (fastify, options) => {
                         password: { type:  'string', minLength: 6 },
                         email: { type:  'string' }
                     }
+                },
+                response: {
+                    '4xx': { $ref: '4xxSerializer#' }
                 }
             }
         },
@@ -126,7 +146,7 @@ const routes = async (fastify, options) => {
                         reply.code(400)
                         return {
                             statusCode: 400,
-                            error: 'Please provide both username and password or omit both.'
+                            message: 'Please provide both username and password or omit both.'
                         }
                     }
                 } else {
@@ -146,7 +166,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: error.message ? error.message : 'No message provided',
+                    message: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }
@@ -155,6 +175,13 @@ const routes = async (fastify, options) => {
 
     fastify.delete(
         '/users/:user_id',
+        {
+            schema: {
+                response: {
+                    '4xx': { $ref: '4xxSerializer#' }
+                }
+            }  
+        },
         async (request, reply) => {
             try {
                 const user_id = request.params.user_id
@@ -173,7 +200,7 @@ const routes = async (fastify, options) => {
                 reply.code(500)
                 return {
                     statusCode: 500,
-                    error: error.message ? error.message : 'No message provided',
+                    message: error.message ? error.message : 'No message provided',
                     details: error
                 }
             }

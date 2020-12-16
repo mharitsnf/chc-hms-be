@@ -6,6 +6,9 @@ const fastify = require("fastify")({
     logger : true
 })
 
+// Add shared schema
+require('./src/schemas/sharedSchema')({ fastify })
+
 // Mongoose
 const mongoose = require("mongoose")
 try {
