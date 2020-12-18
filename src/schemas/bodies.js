@@ -88,4 +88,40 @@ module.exports = ({ fastify }) => {
             category: { type:  'string' }
         }
     })
+
+    // Customer body schema
+    fastify.addSchema({
+        $id: 'CustomerBody',
+        type: 'object',
+        properties: {
+            customerType: {
+                type:  'string',
+                enum: ['FIT', 'Group']
+            },
+            picData: {
+                type: 'object',
+                properties: {
+                    picName: { type: 'string' },
+                    picTelp: { type: 'string' },
+                    picEmail: { type: 'string' },
+                    picAddress: { type: 'string' },
+                    picBirthday: { type: 'object', format: 'date' },
+                    picBirthplace: { type: 'string' },
+                    picHobbies: {
+                        type: 'array',
+                        items: { type: 'string' }
+                    },
+                }
+            },
+            companyData: {
+                type: 'object',
+                properties: {
+                    companyName: { type: 'string' },
+                    companyTelp: { type: 'string' },
+                    companyEmail: { type: 'string' },
+                    companyAddress: { type: 'string' }
+                }
+            }
+        }
+    })
 }
