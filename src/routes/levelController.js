@@ -5,6 +5,7 @@ const routes = async (fastify, options) => {
     fastify.get(
         '/levels',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 response: {
                     '2xx': {
@@ -35,6 +36,7 @@ const routes = async (fastify, options) => {
     fastify.get(
         '/levels/:levelId',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 response: {
                     '2xx': {
@@ -63,6 +65,7 @@ const routes = async (fastify, options) => {
     fastify.post(
         '/levels',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 body: { $ref: 'LevelBody#' },
                 response: {
@@ -92,6 +95,7 @@ const routes = async (fastify, options) => {
     fastify.put(
         '/levels/:levelId',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 body: { $ref: 'LevelBody#' },
                 response: {
@@ -122,6 +126,7 @@ const routes = async (fastify, options) => {
     fastify.delete(
         '/levels/:levelId',
         {
+            preValidation: [fastify.authenticate],
             schema: {
                 response: {
                     '2xx': {

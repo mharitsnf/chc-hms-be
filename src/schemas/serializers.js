@@ -64,4 +64,28 @@ module.exports = ({ fastify }) => {
             level: { $ref: 'LevelSerializer#' }
         }
     })
+
+    // Accommodation Category serializer schema
+    fastify.addSchema({
+        $id: 'AccommodationCategorySerializer',
+        type: 'object',
+        properties: {
+            _id: { type: 'string' },
+            name: { type:  'string' }
+        }
+    })
+
+    // Accommodation serializer schema
+    fastify.addSchema({
+        $id: 'AccommodationSerializer',
+        type: 'object',
+        properties: {
+            _id: { type: 'string' },
+            name: { type:  'string' },
+            location: { type:  'string' },
+            defaultCapacity: { type:  'number' },
+            maxCapacity: { type:  'number' },
+            category: { $ref: 'AccommodationCategorySerializer#' }
+        }
+    })
 }

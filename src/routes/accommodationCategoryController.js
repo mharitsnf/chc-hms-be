@@ -1,13 +1,15 @@
-const Division = require("../models/divisionModel")
+const AccommodationCategory = require("../models/accommodationCategoryModel")
 const { successOutputs, errorOutputs } = require("../outputs/outputs")
+
 
 const routes = async (fastify, options) => {
     fastify.get(
-        '/divisions',
+        '/accommodation_categories',
         {
             preValidation: [fastify.authenticate],
             schema: {
                 response: {
+                    '4xx': { $ref: '4xxSerializer#' },
                     '2xx': {
                         type: 'object',
                         properties: {
@@ -15,7 +17,7 @@ const routes = async (fastify, options) => {
                             message: { type: 'string' },
                             data: {
                                 type: 'array',
-                                items: { $ref: 'DivisionSerializer#' }
+                                items: { $ref: 'AccommodationCategorySerializer#' }
                             }
                         }
                     }
@@ -24,8 +26,8 @@ const routes = async (fastify, options) => {
         },
         async (_request, reply) => {
             try {
-                const divisions = await Division.find()
-                return successOutputs(divisions)
+                const accommodationCategories = await AccommodationCategory.find()
+                return successOutputs(accommodationCategories)
                 
             } catch (error) {
                 return errorOutputs(500, error, reply)
@@ -34,27 +36,28 @@ const routes = async (fastify, options) => {
     )
 
     fastify.get(
-        '/divisions/:divisionId',
+        '/accommodation_categories/:accommodationCategoryId',
         {
             preValidation: [fastify.authenticate],
             schema: {
                 response: {
+                    '4xx': { $ref: '4xxSerializer#' },
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'AccommodationCategorySerializer#' }
                         }
                     }
                 }
-            }
+            }  
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
-                const division = await Division.findById(divisionId)
-                return successOutputs(division)
+                const accommodationCategoryId = request.params.accommodationCategoryId
+                const accommodationCategory = await AccommodationCategory.findById(accommodationCategoryId)
+                return successOutputs(accommodationCategory)
 
             } catch (error) {
                 return errorOutputs(500, error, reply)
@@ -63,18 +66,19 @@ const routes = async (fastify, options) => {
     )
 
     fastify.post(
-        '/divisions',
+        '/accommodation_categories',
         {
             preValidation: [fastify.authenticate],
             schema: {
-                body: { $ref: 'DivisionBody#' },
+                body: { $ref: 'AccommodationCategoryBody#' },
                 response: {
+                    '4xx': { $ref: '4xxSerializer#' },
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'AccommodationCategorySerializer#' }
                         }
                     }
                 }
@@ -82,8 +86,8 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const division = new Division(request.body)
-                const res = await division.save()
+                const accommodationCategory = new AccommodationCategory(request.body)
+                const res = await accommodationCategory.save()
                 return successOutputs(res)
 
             } catch (error) {
@@ -93,18 +97,19 @@ const routes = async (fastify, options) => {
     )
 
     fastify.put(
-        '/divisions/:divisionId',
+        '/accommodation_categories/:accommodationCategoryId',
         {
             preValidation: [fastify.authenticate],
             schema: {
-                body: { $ref: 'DivisionBody#' },
+                body: { $ref: 'AccommodationCategoryBody#' },
                 response: {
+                    '4xx': { $ref: '4xxSerializer#' },
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'AccommodationCategorySerializer#' }
                         }
                     }
                 }
@@ -112,9 +117,9 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
+                const accommodationCategoryId = request.params.accommodationCategoryId
                 const body = request.body
-                const res = await Division.findByIdAndUpdate(divisionId, body, { new: true })
+                const res = await AccommodationCategory.findByIdAndUpdate(accommodationCategoryId, body, { new: true })
                 return successOutputs(res)
 
             } catch (error) {
@@ -124,17 +129,18 @@ const routes = async (fastify, options) => {
     )
 
     fastify.delete(
-        '/divisions/:divisionId',
+        '/accommodation_categories/:accommodationCategoryId',
         {
             preValidation: [fastify.authenticate],
             schema: {
                 response: {
+                    '4xx': { $ref: '4xxSerializer#' },
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'AccommodationCategorySerializer#' }
                         }
                     }
                 }
@@ -142,8 +148,8 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
-                const res = await Division.findByIdAndRemove(divisionId)
+                const accommodationCategoryId = request.params.accommodationCategoryId
+                const res = await AccommodationCategory.findByIdAndRemove(accommodationCategoryId)
 
                 if (res == null) {
                     throw new Error('Document not found')

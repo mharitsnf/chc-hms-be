@@ -32,7 +32,8 @@ try {
 const jwt = require("jsonwebtoken")
 fastify.decorate("authenticate", (request, reply, done) => {
     try {
-        const decoded = jwt.verify(request.headers.authorization, process.env.JWT_SECRET)
+        // Authorization: Bearer [jwt token]
+        const decoded = jwt.verify(request.headers.authorization.split(" ")[1], process.env.JWT_SECRET)
         request.user = decoded
         done()
     } catch (error) {
@@ -52,6 +53,8 @@ fastify.register(require("./src/routes/authController"))
 fastify.register(require("./src/routes/userController"))
 fastify.register(require("./src/routes/divisionController"))
 fastify.register(require("./src/routes/levelController"))
+fastify.register(require("./src/routes/accommodationController"))
+fastify.register(require("./src/routes/accommodationCategoryController"))
 
 // Fastify intialization
 const start = async () => {

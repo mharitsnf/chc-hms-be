@@ -1,9 +1,10 @@
-const Division = require("../models/divisionModel")
+const Accommodation = require("../models/accommodationModel")
 const { successOutputs, errorOutputs } = require("../outputs/outputs")
+
 
 const routes = async (fastify, options) => {
     fastify.get(
-        '/divisions',
+        '/accommodations',
         {
             preValidation: [fastify.authenticate],
             schema: {
@@ -15,7 +16,7 @@ const routes = async (fastify, options) => {
                             message: { type: 'string' },
                             data: {
                                 type: 'array',
-                                items: { $ref: 'DivisionSerializer#' }
+                                items: { $ref: 'AccommodationSerializer#' }
                             }
                         }
                     }
@@ -24,8 +25,8 @@ const routes = async (fastify, options) => {
         },
         async (_request, reply) => {
             try {
-                const divisions = await Division.find()
-                return successOutputs(divisions)
+                const accommodations = await Accommodation.find().populate('category')
+                return successOutputs(accommodations)
                 
             } catch (error) {
                 return errorOutputs(500, error, reply)
@@ -34,27 +35,28 @@ const routes = async (fastify, options) => {
     )
 
     fastify.get(
-        '/divisions/:divisionId',
+        '/accommodations/:accommodationId',
         {
             preValidation: [fastify.authenticate],
             schema: {
                 response: {
+                    '4xx': { $ref: '4xxSerializer#' },
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'AccommodationSerializer#' }
                         }
                     }
                 }
-            }
+            }  
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
-                const division = await Division.findById(divisionId)
-                return successOutputs(division)
+                const accommodationId = request.params.accommodationId
+                const accommodation = await Accommodation.findById(accommodationId).populate('category')
+                return successOutputs(accommodation)
 
             } catch (error) {
                 return errorOutputs(500, error, reply)
@@ -63,18 +65,18 @@ const routes = async (fastify, options) => {
     )
 
     fastify.post(
-        '/divisions',
+        '/accommodations',
         {
             preValidation: [fastify.authenticate],
             schema: {
-                body: { $ref: 'DivisionBody#' },
+                body: { $ref: 'AccommodationBody#' },
                 response: {
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'AccommodationSerializer#' }
                         }
                     }
                 }
@@ -82,8 +84,8 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const division = new Division(request.body)
-                const res = await division.save()
+                const accommodation = new Accommodation(request.body)
+                const res = await accommodation.save()
                 return successOutputs(res)
 
             } catch (error) {
@@ -93,18 +95,18 @@ const routes = async (fastify, options) => {
     )
 
     fastify.put(
-        '/divisions/:divisionId',
+        '/accommodations/:accommodationId',
         {
             preValidation: [fastify.authenticate],
             schema: {
-                body: { $ref: 'DivisionBody#' },
+                body: { $ref: 'AccommodationBody#' },
                 response: {
                     '2xx': {
                         type: 'object',
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'AccommodationSerializer#' }
                         }
                     }
                 }
@@ -112,9 +114,9 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
+                const accommodationId = request.params.accommodationId
                 const body = request.body
-                const res = await Division.findByIdAndUpdate(divisionId, body, { new: true })
+                const res = await Accommodation.findByIdAndUpdate(accommodationId, body, { new: true })
                 return successOutputs(res)
 
             } catch (error) {
@@ -124,7 +126,7 @@ const routes = async (fastify, options) => {
     )
 
     fastify.delete(
-        '/divisions/:divisionId',
+        '/accommodations/:accommodationId',
         {
             preValidation: [fastify.authenticate],
             schema: {
@@ -134,7 +136,7 @@ const routes = async (fastify, options) => {
                         properties: {
                             statusCode: { type: 'number' },
                             message: { type: 'string' },
-                            data: { $ref: 'DivisionSerializer#' }
+                            data: { $ref: 'AccommodationSerializer#' }
                         }
                     }
                 }
@@ -142,8 +144,8 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
-                const divisionId = request.params.divisionId
-                const res = await Division.findByIdAndRemove(divisionId)
+                const accommodationId = request.params.accommodationId
+                const res = await Accommodation.findByIdAndRemove(accommodationId)
 
                 if (res == null) {
                     throw new Error('Document not found')

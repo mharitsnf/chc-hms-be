@@ -62,8 +62,30 @@ module.exports = ({ fastify }) => {
             username: { type:  'string' },
             password: { type:  'string', minLength: 6 },
             email: { type:  'string' },
-            division: { $ref: 'DivisionBody#' },
-            level: { $ref: 'LevelBody#' }
+            division: { type: 'string' },
+            level: { type: 'string' }
+        }
+    })
+
+    // Accommodation Category body schema
+    fastify.addSchema({
+        $id: 'AccommodationCategoryBody',
+        type: 'object',
+        properties: {
+            name: { type:  'string' }
+        }
+    })
+
+    // Accommodation body schema
+    fastify.addSchema({
+        $id: 'AccommodationBody',
+        type: 'object',
+        properties: {
+            name: { type:  'string' },
+            location: { type:  'string' },
+            defaultCapacity: { type:  'number' },
+            maxCapacity: { type:  'number' },
+            category: { type:  'string' }
         }
     })
 }
