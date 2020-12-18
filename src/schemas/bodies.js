@@ -124,4 +124,18 @@ module.exports = ({ fastify }) => {
             }
         }
     })
+
+    // Accommodation History body schema
+    fastify.addSchema({
+        $id: 'AccommodationHistoryBody',
+        type: 'object',
+        properties: {
+            accommodation: { type: 'string' },
+            customer: { type: 'string' },
+            status: { type: 'string', enum: ['Booked', 'DP Paid', 'Fully Paid'] },
+            checkInDateTime: { type: 'object', format: 'date-time' },
+            checkOutDateTime: { type: 'object', format: 'date-time' },
+            customInquiries: { type: 'string' },
+        }
+    })
 }

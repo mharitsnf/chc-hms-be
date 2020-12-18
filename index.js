@@ -56,6 +56,7 @@ fastify.register(require("./src/routes/levelController"))
 fastify.register(require("./src/routes/accommodationController"))
 fastify.register(require("./src/routes/accommodationCategoryController"))
 fastify.register(require("./src/routes/customerController"))
+fastify.register(require("./src/routes/accommodationHistoryController"))
 
 // Fastify intialization
 const start = async () => {

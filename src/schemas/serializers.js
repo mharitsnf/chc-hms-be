@@ -125,4 +125,19 @@ module.exports = ({ fastify }) => {
             }
         }
     })
+
+    // Accommodation History serializer schema
+    fastify.addSchema({
+        $id: 'AccommodationHistorySerializer',
+        type: 'object',
+        properties: {
+            _id: { type: 'string' },
+            accommodation: { type: 'string' },
+            customer: { type: 'string' },
+            status: { type: 'string', enum: ['Booked', 'DP Paid', 'Fully Paid'] },
+            checkInDateTime: { type: 'object', format: 'date-time' },
+            checkOutDateTime: { type: 'object', format: 'date-time' },
+            customInquiries: { type: 'string' },
+        }
+    })
 }
