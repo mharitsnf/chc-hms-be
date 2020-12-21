@@ -132,7 +132,7 @@ module.exports = ({ fastify }) => {
         properties: {
             accommodation: { type: 'string' },
             customer: { type: 'string' },
-            status: { type: 'string', enum: ['Booked', 'DP Paid', 'Fully Paid'] },
+            status: { type: 'string', enum: ['Booked', 'DP Paid', 'Fully Paid', 'Canceled'] },
             checkInDateTime: { type: 'object', format: 'date-time' },
             checkOutDateTime: { type: 'object', format: 'date-time' },
             customInquiries: { type: 'string' },

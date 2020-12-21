@@ -132,11 +132,11 @@ module.exports = ({ fastify }) => {
         type: 'object',
         properties: {
             _id: { type: 'string' },
-            accommodation: { type: 'string' },
-            customer: { type: 'string' },
+            accommodation: { $ref: 'AccommodationSerializer#' },
+            customer: { $ref: 'CustomerSerializer#' },
             status: { type: 'string', enum: ['Booked', 'DP Paid', 'Fully Paid'] },
-            checkInDateTime: { type: 'object', format: 'date-time' },
-            checkOutDateTime: { type: 'object', format: 'date-time' },
+            checkInDateTime: { type: 'string' },
+            checkOutDateTime: { type: 'string' },
             customInquiries: { type: 'string' },
         }
     })

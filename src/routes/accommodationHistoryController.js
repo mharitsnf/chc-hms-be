@@ -24,7 +24,7 @@ const routes = async (fastify, options) => {
         },
         async (_request, reply) => {
             try {
-                const accommodationHistories = await AccommodationHistory.find()
+                const accommodationHistories = await AccommodationHistory.find().populate('accommodation').populate('customer')
                 return successOutputs(accommodationHistories)
                 
             } catch (error) {
@@ -53,7 +53,7 @@ const routes = async (fastify, options) => {
         async (request, reply) => {
             try {
                 const accommodationHistoryId = request.params.accommodationHistoryId
-                const accommodationHistory = await AccommodationHistory.findById(accommodationHistoryId)
+                const accommodationHistory = await AccommodationHistory.findById(accommodationHistoryId).populate('accommodation').populate('customer')
                 return successOutputs(accommodationHistory)
 
             } catch (error) {
@@ -65,7 +65,15 @@ const routes = async (fastify, options) => {
     fastify.post(
         '/accommodation_histories',
         {
-            preValidation: [fastify.authenticate],
+            preValidation: [fastify.authenticate, async (request, reply, done) => {
+                if (request.body.checkInDateTime != null) {
+                    request.body.checkInDateTime = new Date(request.body.checkInDateTime)
+                }
+                if (request.body.checkOutDateTime != null) {
+                    request.body.checkOutDateTime = new Date(request.body.checkOutDateTime)
+                }
+                done()
+            }],
             schema: {
                 body: { $ref: 'AccommodationHistoryBody#' },
                 response: {
@@ -84,7 +92,7 @@ const routes = async (fastify, options) => {
             try {
                 const accommodationHistory = new AccommodationHistory(request.body)
                 const res = await accommodationHistory.save()
-                return successOutputs(res)
+                return successOutputs(await AccommodationHistory.findById(res._id).populate('accommodation').populate('customer'))
 
             } catch (error) {
                 return errorOutputs(500, error, reply)
@@ -95,7 +103,15 @@ const routes = async (fastify, options) => {
     fastify.put(
         '/accommodation_histories/:accommodationHistoryId',
         {
-            preValidation: [fastify.authenticate],
+            preValidation: [fastify.authenticate, (request, reply, done) => {
+                if (request.body.checkInDateTime != null) {
+                    request.body.checkInDateTime = new Date(request.body.checkInDateTime)
+                }
+                if (request.body.checkOutDateTime != null) {
+                    request.body.checkOutDateTime = new Date(request.body.checkOutDateTime)
+                }
+                done()
+            }],
             schema: {
                 body: { $ref: 'AccommodationHistoryBody#' },
                 response: {
@@ -113,16 +129,8 @@ const routes = async (fastify, options) => {
         async (request, reply) => {
             try {
                 const accommodationHistoryId = request.params.accommodationHistoryId
-                const accommodationHistory = await AccommodationHistory.findById(accommodationHistoryId)
                 const body = request.body
-
-                const picData = Object.assign(accommodationHistory._doc.picData, body.picData)
-                const companyData = Object.assign(accommodationHistory._doc.companyData, body.companyData)
-
-                body.picData = picData
-                body.companyData = companyData
-
-                const res = await AccommodationHistory.findByIdAndUpdate(accommodationHistoryId, body, { new: true })
+                const res = await AccommodationHistory.findByIdAndUpdate(accommodationHistoryId, body, { new: true }).populate('accommodation').populate('customer')
                 return successOutputs(res)
 
             } catch (error) {
@@ -151,7 +159,7 @@ const routes = async (fastify, options) => {
         async (request, reply) => {
             try {
                 const accommodationHistoryId = request.params.accommodationHistoryId
-                const res = await AccommodationHistory.findByIdAndRemove(accommodationHistoryId)
+                const res = await AccommodationHistory.findByIdAndRemove(accommodationHistoryId).populate('accommodation').populate('customer')
 
                 if (res == null) {
                     throw new Error('Document not found')
