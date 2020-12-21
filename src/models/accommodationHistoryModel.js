@@ -7,6 +7,6 @@ const accommodationHistorySchema = new mongoose.Schema({
     checkInDateTime: Date,
     checkOutDateTime: Date,
     customInquiries: String
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('AccommodationHistory', accommodationHistorySchema)

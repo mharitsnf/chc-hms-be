@@ -12,9 +12,10 @@ require('./src/schemas/serializers')({ fastify })
 
 // Mongoose
 const mongoose = require("mongoose")
+const mongooseAddress = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?authSource=admin`
 try {
     mongoose.connect(
-        `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?authSource=admin`,
+        mongooseAddress,
         { 
             useNewUrlParser: true,
             useUnifiedTopology: true,
@@ -27,6 +28,25 @@ try {
     console.log(error)
     process.exit(1)
 }
+
+// Scheduling with Agenda
+const Agenda = require('agenda')
+const moment = require('moment')
+const agd = new Agenda({ db: {address: mongooseAddress} })
+
+agd.define('remove booked histories', async job => {
+    try {
+        const AccommodationHistory = require('./src/models/accommodationHistoryModel')
+        let res = await AccommodationHistory.updateMany({
+            status: 'Booked',
+            createdAt: { $lt: moment().subtract(3, 'days').toDate() }
+        }, { status: 'Canceled' })
+        
+        console.log(`Found ${res.n} documents, updated ${res.nModified} documents`)
+    } catch (error) {
+        console.log(`Removing failed, retrying: ${error.message}`)
+    }
+})
 
 // JWT setup
 const jwt = require("jsonwebtoken")
@@ -58,11 +78,16 @@ fastify.register(require("./src/routes/accommodationCategoryController"))
 fastify.register(require("./src/routes/customerController"))
 fastify.register(require("./src/routes/accommodationHistoryController"))
 
-// Fastify intialization
+// Fastify and Agenda intialization
 const start = async () => {
     try {
         await fastify.listen(3000, '0.0.0.0')
         console.log(`Listening on ${fastify.server.address().port}`)
+
+        await agd.start()
+
+        await agd.every('1 minute', 'remove booked histories')
+
     } catch (err) {
         fastify.log.error(err)
         process.exit(1)
