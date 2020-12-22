@@ -7,6 +7,7 @@ const routes = async (fastify, options) => {
         {
             preValidation: [fastify.authenticate],
             schema: {
+                query: { $ref: 'UserQuery#' },
                 response: {
                     '4xx': { $ref: '4xxSerializer#' },
                     '2xx': {
@@ -23,9 +24,20 @@ const routes = async (fastify, options) => {
                 }
             }  
         },
-        async (_request, reply) => {
+        async (request, reply) => {
             try {
-                const users = await User.find().populate('level').populate('division')
+                let query = {}
+                if (request.query.fullname) query.fullname = { $regex: `.*${request.query.fullname}.*` }
+                if (request.query.nickname) query.nickname = { $regex: `.*${request.query.nickname}.*` }
+                if (request.query.KIP) query.KIP = { $regex: `.*${request.query.KIP}.*` }
+                if (request.query.email) query.email = { $regex: `.*${request.query.email}.*` }
+                if (request.query.username) query.username = { $regex: `.*${request.query.username}.*` }
+                if (request.query.division) query.division = request.query.division
+                if (request.query.level) query.level = request.query.level
+
+                console.log(query)
+
+                const users = await User.find(query).populate('level').populate('division')
                 return successOutputs(users)
 
             } catch (error) {

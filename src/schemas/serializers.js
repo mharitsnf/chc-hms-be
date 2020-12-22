@@ -140,4 +140,45 @@ module.exports = ({ fastify }) => {
             customInquiries: { type: 'string' },
         }
     })
+
+    // Customer History serializer
+    fastify.addSchema({
+        $id: 'CustomerHistorySerializer',
+        type: 'object',
+        properties: {
+            _id: { type: 'string' },
+            customerType: {
+                type:  'string',
+                enum: ['FIT', 'Group']
+            },
+            picData: {
+                type: 'object',
+                properties: {
+                    picName: { type: 'string' },
+                    picTelp: { type: 'string' },
+                    picEmail: { type: 'string' },
+                    picAddress: { type: 'string' },
+                    picBirthday: { type: 'string' },
+                    picBirthplace: { type: 'string' },
+                    picHobbies: {
+                        type: 'array',
+                        items: { type: 'string' }
+                    },
+                }
+            },
+            companyData: {
+                type: 'object',
+                properties: {
+                    companyName: { type: 'string' },
+                    companyTelp: { type: 'string' },
+                    companyEmail: { type: 'string' },
+                    companyAddress: { type: 'string' }
+                }
+            },
+            histories: {
+                type: 'array',
+                items: { $ref: 'AccommodationHistorySerializer#' }
+            }
+        }
+    })
 }

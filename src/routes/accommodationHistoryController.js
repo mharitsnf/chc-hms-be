@@ -5,8 +5,17 @@ const routes = async (fastify, options) => {
     fastify.get(
         '/accommodation_histories',
         {
-            preValidation: [fastify.authenticate],
+            preValidation: [fastify.authenticate, (request, reply, done) => {
+                if (request.query.checkInDateTime != null) {
+                    request.query.checkInDateTime = new Date(request.query.checkInDateTime)
+                }
+                if (request.query.checkOutDateTime != null) {
+                    request.query.checkOutDateTime = new Date(request.query.checkOutDateTime)
+                }
+                done()
+            }],
             schema: {
+                query: { $ref: 'AccommodationHistoryQuery#' },
                 response: {
                     '2xx': {
                         type: 'object',
@@ -22,9 +31,16 @@ const routes = async (fastify, options) => {
                 }
             }
         },
-        async (_request, reply) => {
+        async (request, reply) => {
             try {
-                const accommodationHistories = await AccommodationHistory.find().populate('accommodation').populate('customer')
+                let query = {}
+                if (request.query.accommodation) query.accommodation = request.query.accommodation
+                if (request.query.customer) query.customer = request.query.customer
+                if (request.query.checkInDateTime) query.checkInDateTime = { $gt: request.query.checkInDateTime }
+                if (request.query.checkOutDateTime) query.checkOutDateTime = { $lt: request.query.checkOutDateTime }
+
+                const accommodationHistories = await AccommodationHistory.find(query).populate('accommodation').populate('customer')
+
                 return successOutputs(accommodationHistories)
                 
             } catch (error) {

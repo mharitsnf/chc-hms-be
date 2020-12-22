@@ -8,6 +8,7 @@ const fastify = require("fastify")({
 
 // Add shared schema
 require('./src/schemas/bodies')({ fastify })
+require('./src/schemas/queries')({ fastify })
 require('./src/schemas/serializers')({ fastify })
 
 // Mongoose

@@ -124,6 +124,8 @@ module.exports = ({ fastify }) => {
     })
 
     // Accommodation History body schema
+    // Front end: moment -> form an object -> JSON.stringify -> send with fetch
+    // Back end: format date to object in preValidation -> go to handler
     fastify.addSchema({
         $id: 'AccommodationHistoryBody',
         type: 'object',

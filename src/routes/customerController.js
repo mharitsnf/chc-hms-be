@@ -1,4 +1,7 @@
 const Customer = require("../models/customerModel")
+const AccommodationHistory = require("../models/accommodationHistoryModel")
+const Accommodation = require("../models/accommodationModel")
+const mongoose = require('mongoose')
 const { successOutputs, errorOutputs } = require("../outputs/outputs")
 
 const routes = async (fastify, options) => {
@@ -55,6 +58,87 @@ const routes = async (fastify, options) => {
                 const customerId = request.params.customerId
                 const customer = await Customer.findById(customerId)
                 return successOutputs(customer)
+
+            } catch (error) {
+                return errorOutputs(500, error, reply)
+            }
+        }
+    )
+
+    fastify.get(
+        '/customers/:customerId/histories',
+        {
+            preValidation: [fastify.authenticate],
+            schema: {
+                response: {
+                    '2xx': {
+                        type: 'object',
+                        properties: {
+                            statusCode: { type: 'number' },
+                            message: { type: 'string' },
+                            data: { $ref: 'CustomerHistorySerializer#' }
+                        }
+                    }
+                }
+            }
+        },
+        async (request, reply) => {
+            try {
+                const customerId = request.params.customerId
+                const res = await Customer.aggregate([
+                    {
+                        $match: {
+                            '_id': mongoose.Types.ObjectId(customerId)
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: AccommodationHistory.collection.name,
+                            localField: '_id',
+                            foreignField: 'customer',
+                            as: 'histories'
+                        }
+                    },
+                    {
+                        $unwind: '$histories'
+                    },
+                    {
+                        $lookup: {
+                            from: Accommodation.collection.name,
+                            localField: 'histories.accommodation',
+                            foreignField: '_id',
+                            as: 'histories.accommodationDetails'
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                _id: '$_id',
+                                customerType: '$customerType',
+                                picData: '$picData',
+                                companyData: '$companyData',
+                            },
+                            histories: {
+                                $push: {
+                                    accommodation: { $arrayElemAt: ['$histories.accommodationDetails', 0] },
+                                    checkInDateTime: '$histories.checkInDateTime',
+                                    checkOutDateTime: '$histories.checkOutDateTime',
+                                    status: '$histories.status',
+                                }
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: '$_id._id',
+                            customerType: '$_id.customerType',
+                            picData: '$_id.picData',
+                            companyData: '$_id.companyData',
+                            histories: 1
+                        }
+                    }
+                ])
+                return successOutputs(res[0])
 
             } catch (error) {
                 return errorOutputs(500, error, reply)
