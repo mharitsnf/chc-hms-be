@@ -137,7 +137,7 @@ module.exports = ({ fastify }) => {
             status: { type: 'string', enum: ['Booked', 'DP Paid', 'Fully Paid'] },
             checkInDateTime: { type: 'string' },
             checkOutDateTime: { type: 'string' },
-            customInquiries: { type: 'string' },
+            customInquiries: { type: 'string' }
         }
     })
 
@@ -175,6 +175,24 @@ module.exports = ({ fastify }) => {
                     companyAddress: { type: 'string' }
                 }
             },
+            histories: {
+                type: 'array',
+                items: { $ref: 'AccommodationHistorySerializer#' }
+            }
+        }
+    })
+
+    // Accommodation History Detail serializer
+    fastify.addSchema({
+        $id: 'AccommodationHistoryDetailSerializer',
+        type: 'object',
+        properties: {
+            _id: { type: 'string' },
+            name: { type:  'string' },
+            location: { type:  'string' },
+            defaultCapacity: { type:  'number' },
+            maxCapacity: { type:  'number' },
+            category: { $ref: 'AccommodationCategorySerializer#' },
             histories: {
                 type: 'array',
                 items: { $ref: 'AccommodationHistorySerializer#' }

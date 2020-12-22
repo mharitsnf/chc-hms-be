@@ -1,6 +1,7 @@
 const Customer = require("../models/customerModel")
 const AccommodationHistory = require("../models/accommodationHistoryModel")
 const Accommodation = require("../models/accommodationModel")
+const AccommodationCategory = require("../models/accommodationCategoryModel")
 const mongoose = require('mongoose')
 const { successOutputs, errorOutputs } = require("../outputs/outputs")
 

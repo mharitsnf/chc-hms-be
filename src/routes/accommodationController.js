@@ -1,4 +1,8 @@
 const Accommodation = require("../models/accommodationModel")
+const AccommodationHistory = require("../models/accommodationHistoryModel")
+const AccommodationCategory = require('../models/accommodationCategoryModel')
+const Customer = require("../models/customerModel")
+const mongoose = require('mongoose')
 const { successOutputs, errorOutputs } = require("../outputs/outputs")
 
 
@@ -57,6 +61,102 @@ const routes = async (fastify, options) => {
                 const accommodationId = request.params.accommodationId
                 const accommodation = await Accommodation.findById(accommodationId).populate('category')
                 return successOutputs(accommodation)
+
+            } catch (error) {
+                return errorOutputs(500, error, reply)
+            }
+        }
+    )
+
+    fastify.get(
+        '/accommodations/:accommodationId/history',
+        {
+            preValidation: [fastify.authenticate],
+            schema: {
+                response: {
+                    '4xx': { $ref: '4xxSerializer#' },
+                    '2xx': {
+                        type: 'object',
+                        properties: {
+                            statusCode: { type: 'number' },
+                            message: { type: 'string' },
+                            data: { $ref: 'AccommodationHistoryDetailSerializer#' }
+                        }
+                    }
+                }
+            }  
+        },
+        async (request, reply) => {
+            try {
+                const accommodationId = request.params.accommodationId
+                const res = await Accommodation.aggregate([
+                    {
+                        $match: {
+                            '_id': mongoose.Types.ObjectId(accommodationId)
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: AccommodationHistory.collection.name,
+                            localField: '_id',
+                            foreignField: 'accommodation',
+                            as: 'histories'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: AccommodationCategory.collection.name,
+                            localField: 'category',
+                            foreignField: '_id',
+                            as: 'category'
+                        }
+                    },
+                    {
+                        $unwind: '$histories'
+                    },
+                    {
+                        $lookup: {
+                            from: Customer.collection.name,
+                            localField: 'histories.customer',
+                            foreignField: '_id',
+                            as: 'histories.customer'
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: {
+                                _id: '$_id',
+                                name: '$name',
+                                location: '$location',
+                                defaultCapacity: '$defaultCapacity',
+                                maxCapacity: '$maxCapacity',
+                                category: '$category',
+                            },
+                            histories: {
+                                $push: {
+                                    customer: { $arrayElemAt: ['$histories.customer', 0] },
+                                    checkInDateTime: '$histories.checkInDateTime',
+                                    checkOutDateTime: '$histories.checkOutDateTime',
+                                    status: '$histories.status',
+                                }
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: '$_id._id',
+                            name: '$_id.name',
+                            location: '$_id.location',
+                            defaultCapacity: '$_id.defaultCapacity',
+                            maxCapacity: '$_id.maxCapacity',
+                            category: { $arrayElemAt: ['$_id.category', 0] },
+                            histories: 1
+                        }
+                    }
+                ])
+                const util = require('util')
+                console.log(util.inspect(res[0], false, null, true))
+                return successOutputs(res[0])
 
             } catch (error) {
                 return errorOutputs(500, error, reply)
