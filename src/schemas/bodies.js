@@ -15,7 +15,6 @@ module.exports = ({ fastify }) => {
     fastify.addSchema({
         $id: 'DivisionBody',
         type: 'object',
-        required: ['divisionName'],
         properties: {
             divisionName: { type: 'string' },
             menuPermissions: {
@@ -35,7 +34,6 @@ module.exports = ({ fastify }) => {
     fastify.addSchema({
         $id: 'LevelBody',
         type: 'object',
-        required: ['levelName'],
         properties: {
             levelName: { type: 'string' },
             actionPermissions: {
@@ -136,6 +134,7 @@ module.exports = ({ fastify }) => {
             checkInDateTime: { type: 'object', format: 'date-time' },
             checkOutDateTime: { type: 'object', format: 'date-time' },
             customInquiries: { type: 'string' },
+            source: { type: 'string' }
         }
     })
 }

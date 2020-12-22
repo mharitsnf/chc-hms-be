@@ -1,13 +1,12 @@
 const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({
-    fullname: String,
+    fullname: { type: String, required: true },
     nickname: String,
     KIP: { type: String, unique: true, index: true, sparse: true },
     username: { type: String, unique: true },
     password: String,
     email: String,
-    lastLogin: Date,
     division: { type: mongoose.Schema.Types.ObjectId, ref: 'Division' },
     level: { type: mongoose.Schema.Types.ObjectId, ref: 'Level' }
 })
