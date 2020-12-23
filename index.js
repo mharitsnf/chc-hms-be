@@ -14,6 +14,8 @@ require('./src/schemas/serializers')({ fastify })
 // Mongoose
 const mongoose = require("mongoose")
 const mongooseAddress = process.env.DB_URL
+console.log(process.env.NODE_ENV)
+console.log(mongooseAddress)
 try {
     mongoose.connect(
         mongooseAddress,
