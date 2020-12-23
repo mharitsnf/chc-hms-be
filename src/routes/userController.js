@@ -1,4 +1,5 @@
 const User = require("../models/userModel")
+const mongoose = require('mongoose')
 const { successOutputs, errorOutputs } = require("../outputs/outputs")
 
 const routes = async (fastify, options) => {
@@ -27,15 +28,13 @@ const routes = async (fastify, options) => {
         async (request, reply) => {
             try {
                 let query = {}
-                if (request.query.fullname) query.fullname = { $regex: `.*${request.query.fullname}.*` }
-                if (request.query.nickname) query.nickname = { $regex: `.*${request.query.nickname}.*` }
-                if (request.query.KIP) query.KIP = { $regex: `.*${request.query.KIP}.*` }
-                if (request.query.email) query.email = { $regex: `.*${request.query.email}.*` }
-                if (request.query.username) query.username = { $regex: `.*${request.query.username}.*` }
-                if (request.query.division) query.division = request.query.division
-                if (request.query.level) query.level = request.query.level
-
-                console.log(query)
+                if (request.query.fullname) query.fullname = { $regex: `.*${request.query.fullname}.*`, $options: 'i' }
+                if (request.query.nickname) query.nickname = { $regex: `.*${request.query.nickname}.*`, $options: 'i' }
+                if (request.query.KIP) query.KIP = { $regex: `.*${request.query.KIP}.*`, $options: 'i' }
+                if (request.query.email) query.email = { $regex: `.*${request.query.email}.*`, $options: 'i' }
+                if (request.query.username) query.username = { $regex: `.*${request.query.username}.*`, $options: 'i' }
+                if (request.query.division) query.division = mongoose.Types.ObjectId(request.query.division)
+                if (request.query.level) query.level = mongoose.Types.ObjectId(request.query.level)
 
                 const users = await User.find(query).populate('level').populate('division')
                 return successOutputs(users)

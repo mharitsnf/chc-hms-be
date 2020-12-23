@@ -12,6 +12,7 @@ const routes = async (fastify, options) => {
         {
             preValidation: [fastify.authenticate],
             schema: {
+                query: { $ref: 'AccommodationQuery#' },
                 response: {
                     '2xx': {
                         type: 'object',
@@ -27,9 +28,16 @@ const routes = async (fastify, options) => {
                 }
             }
         },
-        async (_request, reply) => {
+        async (request, reply) => {
             try {
-                const accommodations = await Accommodation.find().populate('category')
+                let query = {}
+                if (request.query.name) query.name = { $regex: `.*${request.query.name}.*`, $options: 'i' }
+                if (request.query.location) query.location = { $regex: `.*${request.query.location}.*`, $options: 'i' }
+                if (request.query.defaultCapacity) query.defaultCapacity = { $gte: request.query.defaultCapacity }
+                if (request.query.maxCapacity) query.maxCapacity = { $lte: request.query.maxCapacity }
+                if (request.query.category) query.category = mongoose.Types.ObjectId(request.query.category) 
+
+                const accommodations = await Accommodation.find(query).populate('category')
                 return successOutputs(accommodations)
                 
             } catch (error) {

@@ -11,6 +11,7 @@ const routes = async (fastify, options) => {
         {
             preValidation: [fastify.authenticate],
             schema: {
+                query: { $ref: 'CustomerQuery#' },
                 response: {
                     '2xx': {
                         type: 'object',
@@ -26,9 +27,20 @@ const routes = async (fastify, options) => {
                 }
             }
         },
-        async (_request, reply) => {
+        async (request, reply) => {
             try {
-                const customers = await Customer.find()
+                let query = {}
+                if (request.query.customerType) query.customerType = request.query.customerType
+                if (request.query.picName) query['picData.picName'] = { $regex: `.*${request.query.picName}.*`, $options: 'i' }
+                if (request.query.picTelp) query['picData.picTelp'] = { $regex: `.*${request.query.picTelp}.*`, $options: 'i' }
+                if (request.query.picEmail) query['picData.picEmail'] = { $regex: `.*${request.query.picEmail}.*`, $options: 'i' }
+                if (request.query.picAddress) query['picData.picAddress'] = { $regex: `.*${request.query.picAddress}.*`, $options: 'i' }
+                if (request.query.companyName) query['picData.companyName'] = { $regex: `.*${request.query.companyName}.*`, $options: 'i' }
+                if (request.query.companyTelp) query['picData.companyTelp'] = { $regex: `.*${request.query.companyTelp}.*`, $options: 'i' }
+                if (request.query.companyEmail) query['picData.companyEmail'] = { $regex: `.*${request.query.companyEmail}.*`, $options: 'i' }
+                if (request.query.companyAddress) query['picData.companyAddress'] = { $regex: `.*${request.query.companyAddress}.*`, $options: 'i' }
+
+                const customers = await Customer.find(query)
                 return successOutputs(customers)
                 
             } catch (error) {

@@ -32,6 +32,19 @@ module.exports = ({ fastify }) => {
         }
     })
 
+    // Accommodation query
+    fastify.addSchema({
+        $id: "AccommodationQuery",
+        type: 'object',
+        properties: {
+            name: { type:  'string' },
+            location: { type:  'string' },
+            defaultCapacity: { type:  'number' },
+            maxCapacity: { type:  'number' },
+            category: { type:  'string' }
+        }
+    })
+
     // Accommodation History query
     fastify.addSchema({
         $id: "AccommodationHistoryQuery",
