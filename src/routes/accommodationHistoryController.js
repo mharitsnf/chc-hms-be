@@ -5,8 +5,17 @@ const routes = async (fastify, options) => {
     fastify.get(
         '/accommodation_histories',
         {
-            preValidation: [fastify.authenticate],
+            preValidation: [fastify.authenticate, (request, reply, done) => {
+                if (request.query.checkInDateTime != null) {
+                    request.query.checkInDateTime = new Date(request.query.checkInDateTime)
+                }
+                if (request.query.checkOutDateTime != null) {
+                    request.query.checkOutDateTime = new Date(request.query.checkOutDateTime)
+                }
+                done()
+            }],
             schema: {
+                query: { $ref: 'AccommodationHistoryQuery#' },
                 response: {
                     '2xx': {
                         type: 'object',
@@ -22,9 +31,16 @@ const routes = async (fastify, options) => {
                 }
             }
         },
-        async (_request, reply) => {
+        async (request, reply) => {
             try {
-                const accommodationHistories = await AccommodationHistory.find().populate('accommodation').populate('customer')
+                let query = {}
+                if (request.query.accommodation) query.accommodation = request.query.accommodation
+                if (request.query.customer) query.customer = request.query.customer
+                if (request.query.checkInDateTime) query.checkInDateTime = { $gt: request.query.checkInDateTime }
+                if (request.query.checkOutDateTime) query.checkOutDateTime = { $lt: request.query.checkOutDateTime }
+
+                const accommodationHistories = await AccommodationHistory.find(query).populate('accommodation').populate('customer')
+
                 return successOutputs(accommodationHistories)
                 
             } catch (error) {
@@ -65,14 +81,26 @@ const routes = async (fastify, options) => {
     fastify.post(
         '/accommodation_histories',
         {
-            preValidation: [fastify.authenticate, async (request, reply, done) => {
-                if (request.body.checkInDateTime != null) {
-                    request.body.checkInDateTime = new Date(request.body.checkInDateTime)
+            preValidation: [fastify.authenticate, (request, reply, done) => {
+                try {
+                    if (request.body.checkInDateTime != null) {
+                        request.body.checkInDateTime = new Date(request.body.checkInDateTime)
+                    }
+                    if (request.body.checkOutDateTime != null) {
+                        request.body.checkOutDateTime = new Date(request.body.checkOutDateTime)
+                    }
+                    done()
+                } catch (error) {
+                    reply
+                    .code(500)
+                    .send({
+                        statusCode: 500,
+                        message: error.message ? error.message : 'No message provided',
+                        detail: error
+                    })
+
+                    done()
                 }
-                if (request.body.checkOutDateTime != null) {
-                    request.body.checkOutDateTime = new Date(request.body.checkOutDateTime)
-                }
-                done()
             }],
             schema: {
                 body: { $ref: 'AccommodationHistoryBody#' },
@@ -90,9 +118,19 @@ const routes = async (fastify, options) => {
         },
         async (request, reply) => {
             try {
+                let searchRes = await AccommodationHistory.find({
+                    accommodation: request.body.accommodation,
+                    checkInDateTime: { $lt: request.body.checkOutDateTime },
+                    checkOutDateTime: { $gt: request.body.checkInDateTime }
+                })
+
+                if (searchRes.length > 0) {
+                    return errorOutputs(500, new Error('Accommodation has been occupied'), reply)
+                }
+
                 const accommodationHistory = new AccommodationHistory(request.body)
-                const res = await accommodationHistory.save()
-                return successOutputs(await AccommodationHistory.findById(res._id).populate('accommodation').populate('customer'))
+                const newAccHistory = await accommodationHistory.save()
+                return successOutputs(await AccommodationHistory.findById(newAccHistory._id).populate('accommodation').populate('customer'))
 
             } catch (error) {
                 return errorOutputs(500, error, reply)

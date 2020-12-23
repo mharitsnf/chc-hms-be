@@ -1,9 +1,9 @@
 const mongoose = require("mongoose")
 
 const customerSchema = new mongoose.Schema({
-    customerType: { type: String, enum: ['FIT', 'Group']},
+    customerType: { type: String, enum: ['FIT', 'Group'], required: true},
     picData: {
-        picName: String,
+        picName: { type: String, required: true },
         picTelp: String,
         picEmail: String,
         picAddress: String,

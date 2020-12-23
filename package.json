@@ -4,16 +4,19 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "mharitsnf",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "agenda": "^3.1.0",
     "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "fastify": "^3.9.1",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
     "mongoose": "^5.11.7"
   },
   "devDependencies": {

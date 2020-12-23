@@ -15,7 +15,6 @@ module.exports = ({ fastify }) => {
     fastify.addSchema({
         $id: 'DivisionBody',
         type: 'object',
-        required: ['divisionName'],
         properties: {
             divisionName: { type: 'string' },
             menuPermissions: {
@@ -35,7 +34,6 @@ module.exports = ({ fastify }) => {
     fastify.addSchema({
         $id: 'LevelBody',
         type: 'object',
-        required: ['levelName'],
         properties: {
             levelName: { type: 'string' },
             actionPermissions: {
@@ -126,6 +124,8 @@ module.exports = ({ fastify }) => {
     })
 
     // Accommodation History body schema
+    // Front end: moment -> form an object -> JSON.stringify -> send with fetch
+    // Back end: format date to object in preValidation -> go to handler
     fastify.addSchema({
         $id: 'AccommodationHistoryBody',
         type: 'object',
@@ -136,6 +136,7 @@ module.exports = ({ fastify }) => {
             checkInDateTime: { type: 'object', format: 'date-time' },
             checkOutDateTime: { type: 'object', format: 'date-time' },
             customInquiries: { type: 'string' },
+            source: { type: 'string' }
         }
     })
 }
