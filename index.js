@@ -13,7 +13,7 @@ require('./src/schemas/serializers')({ fastify })
 
 // Mongoose
 const mongoose = require("mongoose")
-const mongooseAddress = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}?authSource=admin`
+const mongooseAddress = process.env.DB_URL
 try {
     mongoose.connect(
         mongooseAddress,
