@@ -108,7 +108,25 @@ const routes = async (fastify, options) => {
                             from: Accommodation.collection.name,
                             localField: 'histories.accommodation',
                             foreignField: '_id',
-                            as: 'histories.accommodationDetails'
+                            as: 'histories.accommodation'
+                        }
+                    },
+                    {
+                        $addFields: {
+                            'histories.accommodation': { $arrayElemAt: ['$histories.accommodation', 0] }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: AccommodationCategory.collection.name,
+                            localField: 'histories.accommodation.category',
+                            foreignField: '_id',
+                            as: 'histories.accommodation.category'
+                        }
+                    },
+                    {
+                        $addFields: {
+                            'histories.accommodation.category': { $arrayElemAt: ['$histories.accommodation.category', 0] }
                         }
                     },
                     {
@@ -121,7 +139,7 @@ const routes = async (fastify, options) => {
                             },
                             histories: {
                                 $push: {
-                                    accommodation: { $arrayElemAt: ['$histories.accommodationDetails', 0] },
+                                    accommodation: '$histories.accommodation',
                                     checkInDateTime: '$histories.checkInDateTime',
                                     checkOutDateTime: '$histories.checkOutDateTime',
                                     status: '$histories.status',
@@ -139,6 +157,8 @@ const routes = async (fastify, options) => {
                         }
                     }
                 ])
+                const util = require('util')
+                console.log(util.inspect(res, false, null, true))
                 return successOutputs(res[0])
 
             } catch (error) {
