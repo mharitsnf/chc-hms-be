@@ -1,5 +1,5 @@
 // Dotenv setup
-require('dotenv').config()
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 
 // Fastify instancing
 const fastify = require("fastify")({
