@@ -1,4 +1,5 @@
 # PRODUCTION DOCKERFILE
+ARG PORT=80
 FROM node:14
 
 ENV NODE_ENV=production
@@ -18,5 +19,5 @@ RUN npm ci --only=production
 # Bundle app source
 COPY . .
 
-EXPOSE 3000
+EXPOSE ${PORT}
 CMD [ "npm", "run", "start" ]

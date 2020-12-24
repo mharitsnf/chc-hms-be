@@ -1,5 +1,8 @@
 # This is development dockerfile
+ARG PORT=3000
 FROM node:14
+
+ENV NODE_ENV=development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -16,5 +19,5 @@ RUN npm install
 # Bundle app source
 COPY ./ ../../package*.json
 
-EXPOSE 3000
+EXPOSE ${PORT}
 CMD [ "npm", "run", "dev" ]

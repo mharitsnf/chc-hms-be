@@ -84,7 +84,7 @@ fastify.register(require("./src/routes/accommodationHistoryController"))
 // Fastify and Agenda intialization
 const start = async () => {
     try {
-        await fastify.listen(3000, '0.0.0.0')
+        await fastify.listen(process.env.PORT, '0.0.0.0')
         console.log(`Listening on ${fastify.server.address().port}`)
 
         await agd.start()
