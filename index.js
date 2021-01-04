@@ -15,6 +15,7 @@ require('./src/schemas/serializers')({ fastify })
 const mongoose = require("mongoose")
 const mongooseAddress = process.env.DB_URL
 console.log(process.env.NODE_ENV)
+console.log(process.env.PORT)
 console.log(mongooseAddress)
 try {
     mongoose.connect(
@@ -53,6 +54,9 @@ agd.define('remove booked histories', async job => {
 
 // JWT setup
 const jwt = require("jsonwebtoken")
+
+fastify.register(require('fastify-cors'), { origin: true })
+
 fastify.decorate("authenticate", (request, reply, done) => {
     try {
         // Authorization: Bearer [jwt token]
