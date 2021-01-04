@@ -161,10 +161,6 @@ const routes = async (fastify, options) => {
                     },
                     {
                         $project: {
-                            _id: '$_id._id',
-                            customerType: '$_id.customerType',
-                            picData: '$_id.picData',
-                            companyData: '$_id.companyData',
                             histories: 1
                         }
                     }

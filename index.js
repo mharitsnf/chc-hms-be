@@ -66,9 +66,9 @@ fastify.decorate("authenticate", (request, reply, done) => {
         done()
     } catch (error) {
         reply
-            .code(500)
+            .code(400)
             .send({
-                statusCode: 500,
+                statusCode: 400,
                 message: "Authentication failed",
                 detail: error
             })
