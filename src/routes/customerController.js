@@ -171,7 +171,7 @@ const routes = async (fastify, options) => {
                 ])
                 const util = require('util')
                 console.log(util.inspect(res, false, null, true))
-                return successOutputs(res[0])
+                return successOutputs(res[0] == undefined ? {} : res[0])
 
             } catch (error) {
                 return errorOutputs(500, error, reply)
