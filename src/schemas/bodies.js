@@ -11,6 +11,15 @@ module.exports = ({ fastify }) => {
         }
     })
 
+    // Auth verify body schema
+    fastify.addSchema({
+        $id: 'AuthVerifyBody',
+        type: 'object',
+        properties: {
+            token: { type: 'string' },
+        }
+    })
+
     // Division body schema
     fastify.addSchema({
         $id: 'DivisionBody',
