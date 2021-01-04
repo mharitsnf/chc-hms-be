@@ -152,12 +152,6 @@ const routes = async (fastify, options) => {
                     },
                     {
                         $project: {
-                            _id: '$_id._id',
-                            name: '$_id.name',
-                            location: '$_id.location',
-                            defaultCapacity: '$_id.defaultCapacity',
-                            maxCapacity: '$_id.maxCapacity',
-                            category: { $arrayElemAt: ['$_id.category', 0] },
                             histories: 1
                         }
                     }
